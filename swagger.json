@@ -1,0 +1,3249 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "Documentación API Carga Masiva BESA",
+    "description": "Documentación generada a través de la herramienta swagger, mayor referencia en [https://swagger.io](https://swagger.io).\n\nLink base del servicio: https://service-besa.apps.funcionpublica.gob.mx/pruebas/api/v1/"
+  },
+  "externalDocs": {
+    "description": "Comentarios al desarrollo",
+    "url": "mailto:'ejvargas@funcionpublica.gob.mx'"
+  },
+  "tags": [
+    {
+      "name": "Authorization",
+      "description": "Login y generación de tokens para envíos"
+    },
+    {
+      "name": "PedidoAbierto",
+      "description": "Pedidos de contrato abierto"
+    },
+    {
+      "name": "EntregasReales",
+      "description": "Avance de entregables de contrato cerrado y abierto"
+    },
+    {
+      "name": "FacturasRelacionadas",
+      "description": "Facturas de contrato cerrado y abierto"
+    },
+    {
+      "name": "PagoFactura",
+      "description": "Pago de facturas de contrato cerrado y abierto"
+    },
+    {
+      "name": "SancionAplicada",
+      "description": "Sanciones aplicadas de contrato cerrado y abierto"
+    },
+    {
+      "name": "NotaCredito",
+      "description": "Notas de crédito de contrato cerrado y abierto"
+    }
+  ],
+  "paths": {
+    "/login": {
+      "post": {
+        "summary": "Login de obtención de tokens",
+        "description": "Login de obtención de tokens",
+        "tags": [
+          "Authorization"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "Parámetros de entrada",
+            "description": "Información de entrada",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/requestLogin"
+            }
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "headers": {
+              "Authorization": {
+                "type": "string",
+                "description": "Token de respuesta con información del usuario en formato jwt.io"
+              }
+            },
+            "description": "Operación exitosa.",
+            "schema": {
+              "$ref": "#/definitions/respuestaLogin"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"200\",\n  \"detalles\": [\n    \"Operación exitosa\"\n  ]\n}"
+            }
+          },
+          "400": {
+            "description": "Bad request - Campos inválidos o insuficientes",
+            "schema": {
+              "$ref": "#/definitions/respuestaLogin"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"400\",\n  \"detalles\": [\n    \"Solicitud inválida.\"\n  ]\n}"
+            }
+          },
+          "401": {
+            "description": "Credenciales inválidas",
+            "schema": {
+              "$ref": "#/definitions/respuestaLogin"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"401\",\n  \"detalles\": [\n    \"Credenciales inválidas, favor de verificar.\"\n  ]\n}"
+            }
+          },
+          "404": {
+            "description": "Not found - Contrato no encontrado",
+            "schema": {
+              "$ref": "#/definitions/respuestaLogin"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"404\",\n  \"detalles\": [\n    \"Contrato no encontrado, validar número de contrato y/o CURP del administrador de contrato.\"\n  ]\n}"
+            }
+          },
+          "500": {
+            "description": "Error inesperado",
+            "schema": {
+              "$ref": "#/definitions/respuestaLogin"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"500\",\n  \"detalles\": [\n    \"Error inesperado al consumir el servicio.\"\n  ]\n}"
+            }
+          }
+        }
+      }
+    },
+    "/estatus": {
+      "get": {
+        "summary": "Estatus",
+        "description": "Método para verificar servicio",
+        "tags": [
+          "Estatus"
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Operación exitosa.",
+            "schema": {
+              "$ref": "#/definitions/respuestaGetEstatus"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"200\",\n  \"detalles\": [\n    \"Operación exitosa\"\n  ]\n}"
+            }
+          },
+          "500": {
+            "description": "Error inesperado",
+            "schema": {
+              "$ref": "#/definitions/respuestaGetEstatus"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"500\",\n  \"detalles\": [\n    \"Error inesperado al consumir el servicio.\"\n  ]\n}"
+            }
+          }
+        }
+      }
+    },
+    "/pedido/add": {
+      "post": {
+        "summary": "Agregar pedido de contrato abierto",
+        "description": "Método para agregar un pedido de contrato abierto",
+        "tags": [
+          "PedidoAbierto"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "token jwt obtenido en la respuesta de login",
+            "required": true,
+            "type": "string",
+            "default": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+          },
+          {
+            "in": "body",
+            "name": "Parámetros de entrada",
+            "description": "Información de entrada",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/requestPedido"
+            }
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Operación exitosa.",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"200\",\n  \"id\": \"er56535dgsf24r74fgd7475654\",\n  \"detalles\": [\n    \"Operación exitosa\"\n  ],\n  \"alertas\": [\n    \"La fecha de solicitud no puede ser mayor a la fecha de entrega programada.\"\n  ]\n}"
+            }
+          },
+          "400": {
+            "description": "Bad request - Campos inválidos o insuficientes",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"400\",\n  \"id\": null,\n  \"detalles\": [\n    \"Solicitud inválida.\",\n    \"La fecha de entrega programada no puede ser menor a la fecha de inicio de vigencia del contrato.\",\n    \"La fecha de entrega programada no puede ser mayor a la fecha de fin de vigencia del contrato.\",\n    \"No existe el proveedor del contrato\",\n    \"No existe la clave cucop\",\n    \"Protesta decir verdad distinta de true\"\n  ],\n  \"alertas\": []\n}"
+            }
+          },
+          "401": {
+            "description": "Credenciales inválidas",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"401\",\n  \"id\": null,\n  \"detalles\": [\n    \"Credenciales inválidas, favor de verificar.\"\n  ],\n  \"alertas\": []\n}"
+            }
+          },
+          "404": {
+            "description": "Not found - Contrato no encontrado",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"404\",\n  \"id\": null,\n  \"detalles\": [\n    \"Contrato no encontrado, validar número de contrato y/o CURP del administrador de contrato.\"\n  ],\n  \"alertas\": []\n}"
+            }
+          },
+          "500": {
+            "description": "Error inesperado",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"500\",\n  \"id\": null,\n  \"detalles\": [\n    \"Error inesperado al consumir el servicio.\"\n  ],\n  \"alertas\": []\n}"
+            }
+          }
+        }
+      }
+    },
+    "/pedido/edit/{idPedido}": {
+      "post": {
+        "summary": "Actualizar pedido de contrato abierto",
+        "description": "Método para actualizar un pedido de contrato abierto",
+        "tags": [
+          "PedidoAbierto"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "token jwt obtenido en la respuesta de login",
+            "required": true,
+            "type": "string",
+            "default": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+          },
+          {
+            "name": "idPedido",
+            "in": "path",
+            "description": "id del pedido a actualizar",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "Parámetros de entrada",
+            "description": "Información de entrada",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/requestPedido"
+            }
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Operación exitosa.",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"200\",\n  \"id\": \"er56535dgsf24r74fgd7475654\",\n  \"detalles\": [\n    \"Operación exitosa\"\n  ],\n  \"alertas\": [\"La fecha de solicitud no puede ser mayor a la fecha de entrega programada.\"]\n}"
+            }
+          },
+          "400": {
+            "description": "Bad request - Campos inválidos o insuficientes",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"400\",\n  \"id\": \"er56535dgsf24r74fgd7475654\",\n  \"detalles\": [\n    \"Solicitud inválida.\",\n    \"La fecha de entrega programada no puede ser menor a la fecha de inicio de vigencia del contrato.\",\n    \"La fecha de entrega programada no puede ser mayor a la fecha de fin de vigencia del contrato.\",\n    \"No existe el proveedor del contrato\",\n    \"No existe la clave cucop\",\n    \"Protesta decir verdad distinta de true\"\n  ],\n  \"alertas\": []\n}"
+            }
+          },
+          "401": {
+            "description": "Credenciales inválidas",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"401\",\n  \"id\": null,\n  \"detalles\": [\n    \"Credenciales inválidas, favor de verificar.\"\n  ],\n  \"alertas\": []\n}"
+            }
+          },
+          "404": {
+            "description": "Not found - Contrato no encontrado",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"404\",\n  \"id\": \"er56535dgsf24r74fgd7475654\",\n  \"detalles\": [\n    \"Contrato no encontrado, validar número de contrato y/o CURP del administrador de contrato.\"\n  ],\n  \"alertas\": []\n}"
+            }
+          },
+          "500": {
+            "description": "Error inesperado",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"500\",\n  \"id\": null,\n  \"detalles\": [\n    \"Error inesperado al consumir el servicio.\"\n  ],\n  \"alertas\": []\n}"
+            }
+          }
+        }
+      }
+    },
+    "/pedido/delete/{idPedido}": {
+      "post": {
+        "summary": "Eliminar pedido de contrato abierto",
+        "description": "Método para eliminar un pedido de contrato abierto",
+        "tags": [
+          "PedidoAbierto"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "token jwt obtenido en la respuesta de login",
+            "required": true,
+            "type": "string",
+            "default": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+          },
+          {
+            "name": "idPedido",
+            "in": "path",
+            "description": "id del pedido a eliminar",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Operación exitosa.",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"200\",\n  \"id\": \"er56535dgsf24r74fgd7475654\",\n  \"detalles\": [\n    \"Operación exitosa\"\n  ],\n  \"alertas\": []\n}"
+            }
+          },
+          "400": {
+            "description": "Bad request - Campos inválidos o insuficientes",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"400\",\n   \"id\": \"er56535dgsf24r74fgd7475654\",\n  \"detalles\": [\n    \"Solicitud inválida.\",\n    \"El pedido ya tiene entregas reales registradas o el pedido ya está aplicado\",\n    \"No existe el pedido\"\n  ],\n  \"alertas\": []\n}"
+            }
+          },
+          "401": {
+            "description": "Credenciales inválidas",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"401\",\n  \"id\": null,\n  \"detalles\": [\n    \"Credenciales inválidas, favor de verificar.\"\n  ],\n  \"alertas\": []\n}"
+            }
+          },
+          "404": {
+            "description": "Not found - Contrato no encontrado",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"404\",\n  \"id\": \"er56535dgsf24r74fgd7475654\",\n  \"detalles\": [\n    \"Contrato no encontrado, validar número de contrato y/o CURP del administrador de contrato.\"\n  ],\n  \"alertas\": []\n}"
+            }
+          },
+          "500": {
+            "description": "Error inesperado",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"500\",\n  \"id\": null,\n  \"detalles\": [\n    \"Error inesperado al consumir el servicio.\"\n  ],\n  \"alertas\": []\n}"
+            }
+          }
+        }
+      }
+    },
+    "/pedidos": {
+      "get": {
+        "summary": "Consultar pedidos de contrato abierto",
+        "description": "Método para consultar los pedidos de contratos abiertos",
+        "tags": [
+          "PedidoAbierto"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "token jwt obtenido en la respuesta de login",
+            "required": true,
+            "type": "string",
+            "default": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Operación exitosa.",
+            "schema": {
+              "$ref": "#/definitions/respuestaGetPedidos"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"200\",\n  \"detalles\": [\n    \"Operación exitosa\"\n  ],\n  \"pedidos\": [\n    {\n      \"id\": \"4642egrefdhfdf4r63634\",\n      \"cantidad\": 5,\n      \"claveCucop\": \"212323\",\n      \"conceptoEspecifico\": \"Medicamento de alta especialidad\",\n      \"fechaEntregaProgramada\": \"2023-02-18\",\n      \"fechaSolicitud\": \"2023-02-15\",\n      \"lugarYUbicacionEntregaProgramada\": \"Oficina recursos humanos\",\n      \"modo\": \"INICIAL\",\n      \"proveedor\": \"XXX971116XXX\",\n      \"precioUnitarioProgramado\": 15600,\n      \"protestaDecirVerdad\": true\n    }\n  ]\n}"
+            }
+          },
+          "400": {
+            "description": "Bad request - Campos inválidos o insuficientes",
+            "schema": {
+              "$ref": "#/definitions/respuestaGetPedidos"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"400\",\n  \"detalles\": [\n    \"Solicitud inválida.\"\n  ],\n  \"pedidos\": null\n}"
+            }
+          },
+          "401": {
+            "description": "Credenciales inválidas",
+            "schema": {
+              "$ref": "#/definitions/respuestaGetPedidos"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"401\",\n  \"detalles\": [\n    \"Credenciales inválidas, favor de verificar.\"\n  ],\n  \"pedidos\": null\n}"
+            }
+          },
+          "404": {
+            "description": "Not found - Contrato no encontrado",
+            "schema": {
+              "$ref": "#/definitions/respuestaGetPedidos"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"404\",\n  \"detalles\": [\n    \"Contrato sin pedidos\"\n  ],\n  \"pedidos\": null\n}"
+            }
+          },
+          "500": {
+            "description": "Error inesperado",
+            "schema": {
+              "$ref": "#/definitions/respuestaGetPedidos"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"500\",\n  \"detalles\": [\n    \"Error inesperado al consumir el servicio.\"\n  ],\n  \"pedidos\": null\n}"
+            }
+          }
+        }
+      }
+    },
+    "/entregaReal/add": {
+      "post": {
+        "summary": "Agregar entrega real",
+        "description": "Método para agregar una entrega real",
+        "tags": [
+          "EntregasReales"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "token jwt obtenido en la respuesta de login",
+            "required": true,
+            "type": "string",
+            "default": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+          },
+          {
+            "in": "body",
+            "name": "Parámetros de entrada",
+            "description": "Información de entrada",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/requestAvance"
+            }
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Operación exitosa.",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"200\",\n  \"id\": \"er56535dgsf24r74fgd7475654\",\n  \"detalles\": [\n    \"Operación exitosa\"\n  ],\n  \"alertas\": [\n    \"La fecha de entrega real no puede ser mayor a la fecha de entrega programada\",\n    \"La cantidad real no puede ser mayor a la cantidad programada.\",\n    \"El precio unitario real no puede ser mayor al precio unitario programado.\",\n    \"El importe de entregable real no puede ser mayor al importe o monto máximo del contrato.\",\n    \"La fecha de entrega real debe ser menor o igual a la fecha fin de vigencia del contrato.\",\n    \"La fecha de entrega real debe ser mayor o igual a la fecha inicio de vigencia del contrato.\",\n    \"La suma de los montos por ejercicio debe estar entre el monto mínimo y el monto máximo del contrato, aplica para abiertos.\",\n    \"El importe de entregable real no puede ser mayor a la suma de suficiencia presupuestal.\",\n    \"La fecha de entrega real no puede ser mayor a la fecha actual.\"\n  ]\n}"
+            }
+          },
+          "400": {
+            "description": "Bad request - Campos inválidos o insuficientes",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"400\",\n  \"id\": null,\n  \"detalles\": [\n    \"Solicitud inválida.\",\n    \"El proveedor debe ser igual en todos los entregables programados.\",\n    \"No existe el proveedor del contrato\",\n    \"Protesta decir verdad distinta de true\",\n    \"Verificar entrega programada, id inexistente\"\n  ],\n  \"alertas\": []\n}"
+            }
+          },
+          "401": {
+            "description": "Credenciales inválidas",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"401\",\n  \"id\": null,\n  \"detalles\": [\n    \"Credenciales inválidas, favor de verificar.\"\n  ],\n  \"alertas\": []\n}"
+            }
+          },
+          "404": {
+            "description": "Not found - Contrato no encontrado",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"404\",\n  \"id\": null,\n  \"detalles\": [\n    \"Contrato no encontrado, validar número de contrato y/o CURP del administrador de contrato.\"\n  ],\n  \"alertas\": []\n}"
+            }
+          },
+          "500": {
+            "description": "Error inesperado",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"500\",\n  \"id\": null,\n  \"detalles\": [\n    \"Error inesperado al consumir el servicio.\"\n  ],\n  \"alertas\": []\n}"
+            }
+          }
+        }
+      }
+    },
+    "/entregaReal/edit/{idEntrega}": {
+      "post": {
+        "summary": "Actualizar entrega real",
+        "description": "Método para actualizar entrega real",
+        "tags": [
+          "EntregasReales"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "token jwt obtenido en la respuesta de login",
+            "required": true,
+            "type": "string",
+            "default": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+          },
+          {
+            "name": "idEntrega",
+            "in": "path",
+            "description": "id de la entrega a actualizar",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "Parámetros de entrada",
+            "description": "Información de entrada",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/requestAvance"
+            }
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Operación exitosa.",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"200\",\n  \"id\": \"er56535dgsf24r74fgd7475654\",\n  \"detalles\": [\n    \"Operación exitosa\"\n  ],\n  \"alertas\": [\n    \"La fecha de entrega real no puede ser mayor a la fecha de entrega programada\",\n    \"La cantidad real no puede ser mayor a la cantidad programada.\",\n    \"El precio unitario real no puede ser mayor al precio unitario programado.\",\n    \"El importe de entregable real no puede ser mayor al importe o monto máximo del contrato.\",\n    \"La fecha de entrega real debe ser menor o igual a la fecha fin de vigencia del contrato.\",\n    \"La fecha de entrega real debe ser mayor o igual a la fecha inicio de vigencia del contrato.\",\n    \"La suma de los montos por ejercicio debe estar entre el monto mínimo y el monto máximo del contrato, aplica para abiertos.\",\n    \"El importe de entregable real no puede ser mayor a la suma de suficiencia presupuestal.\",\n    \"La fecha de entrega real no puede ser mayor a la fecha actual.\"\n  ]\n}"
+            }
+          },
+          "400": {
+            "description": "Bad request - Campos inválidos o insuficientes",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"400\",\n  \"id\": \"er56535dgsf24r74fgd7475654\",\n  \"detalles\": [\n    \"Solicitud inválida.\",\n    \"El proveedor debe ser igual en todos los entregables programados.\",\n    \"No existe el proveedor del contrato\",\n    \"Protesta decir verdad distinta de true\",\n    \"Verificar entrega programada, id inexistente\"\n  ],\n  \"alertas\": []\n}"
+            }
+          },
+          "401": {
+            "description": "Credenciales inválidas",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"401\",\n  \"id\": null,\n  \"detalles\": [\n    \"Credenciales inválidas, favor de verificar.\"\n  ],\n  \"alertas\": []\n}"
+            }
+          },
+          "404": {
+            "description": "Not found - Contrato no encontrado",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"404\",\n  \"id\": \"er56535dgsf24r74fgd7475654\",\n  \"detalles\": [\n    \"Contrato no encontrado, validar número de contrato y/o CURP del administrador de contrato.\"\n  ],\n  \"alertas\": []\n}"
+            }
+          },
+          "500": {
+            "description": "Error inesperado",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"500\",\n  \"id\": null,\n  \"detalles\": [\n    \"Error inesperado al consumir el servicio.\"\n  ],\n  \"alertas\": []\n}"
+            }
+          }
+        }
+      }
+    },
+    "/entregaReal/delete/{idEntrega}": {
+      "post": {
+        "summary": "Eliminar entrega real",
+        "description": "Método para eliminar una entrega real",
+        "tags": [
+          "EntregasReales"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "token jwt obtenido en la respuesta de login",
+            "required": true,
+            "type": "string",
+            "default": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+          },
+          {
+            "name": "idEntrega",
+            "in": "path",
+            "description": "id de la entrega a eliminar",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Operación exitosa.",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"200\",\n  \"id\": \"er56535dgsf24r74fgd7475654\",\n  \"detalles\": [\n    \"Operación exitosa\"\n  ],\n  \"alertas\": []\n}"
+            }
+          },
+          "400": {
+            "description": "Bad request - Campos inválidos o insuficientes",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"400\",\n  \"id\": \"er56535dgsf24r74fgd7475654\",\n  \"detalles\": [\n    \"Solicitud inválida.\",\n    \"La entrega real ya tiene facturas registradas o la entrega ya está aplicada\",\n    \"No existe la entrega real\"\n  ],\n  \"alertas\": []\n}"
+            }
+          },
+          "401": {
+            "description": "Credenciales inválidas",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"401\",\n  \"id\": null,\n  \"detalles\": [\n    \"Credenciales inválidas, favor de verificar.\"\n  ],\n  \"alertas\": []\n}"
+            }
+          },
+          "404": {
+            "description": "Not found - Contrato no encontrado",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"404\",\n  \"id\": \"er56535dgsf24r74fgd7475654\",\n  \"detalles\": [\n    \"Contrato no encontrado, validar número de contrato y/o CURP del administrador de contrato.\"\n  ],\n  \"alertas\": []\n}"
+            }
+          },
+          "500": {
+            "description": "Error inesperado",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"500\",\n  \"id\": null,\n  \"detalles\": [\n    \"Error inesperado al consumir el servicio.\"\n  ],\n  \"alertas\": []\n}"
+            }
+          }
+        }
+      }
+    },
+    "/entregaReal": {
+      "get": {
+        "summary": "Consultar entregas reales",
+        "description": "Método para consultar las entregas reales",
+        "tags": [
+          "EntregasReales"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "token jwt obtenido en la respuesta de login",
+            "required": true,
+            "type": "string",
+            "default": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Operación exitosa.",
+            "schema": {
+              "$ref": "#/definitions/respuestaGetEntregaReal"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"200\",\n  \"detalles\": [\n    \"Operación exitosa\"\n  ],\n  \"entregaReal\": [\n    {\n      \"id\": \"4642egrefdhfdf4r63634\",\n      \"entregaProgramada\": [\n        {\n          \"id\": \"dh36543gdfgf6364gfd3\",\n          \"cantidad\": 5,\n          \"precioUnitario\": 1000\n        }\n      ],\n      \"condicionEntrega\": \"ADECUADA\",\n      \"descripcionEntrega\": \"Se realizó la entrega en buenas condiciones\",\n      \"fechaEntrega\": \"2023-02-13\",\n      \"lugarYUbicacionEntrega\": \"Oficina recursos humanos\",\n      \"proveedor\": \"XXX971116XXX\",\n      \"tipoDocumento\": \"ACTA_DE_ENTREGA\",\n      \"protestaDecirVerdad\": true\n    }\n  ]\n}"
+            }
+          },
+          "400": {
+            "description": "Bad request - Campos inválidos o insuficientes",
+            "schema": {
+              "$ref": "#/definitions/respuestaGetEntregaReal"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"400\",\n  \"detalles\": [\n    \"Solicitud inválida.\"\n  ],\n  \"entregaReal\": null\n}"
+            }
+          },
+          "401": {
+            "description": "Credenciales inválidas",
+            "schema": {
+              "$ref": "#/definitions/respuestaGetEntregaReal"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"401\",\n  \"detalles\": [\n    \"Credenciales inválidas, favor de verificar.\"\n  ],\n  \"entregaReal\": null\n}"
+            }
+          },
+          "404": {
+            "description": "Not found - Contrato no encontrado",
+            "schema": {
+              "$ref": "#/definitions/respuestaGetEntregaReal"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"404\",\n  \"detalles\": [\n    \"Contrato sin entregas reales\"\n  ],\n  \"entregaReal\": null\n}"
+            }
+          },
+          "500": {
+            "description": "Error inesperado",
+            "schema": {
+              "$ref": "#/definitions/respuestaGetEntregaReal"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"500\",\n  \"detalles\": [\n    \"Error inesperado al consumir el servicio.\"\n  ],\n  \"entregaReal\": null\n}"
+            }
+          }
+        }
+      }
+    },
+    "/factura/add": {
+      "post": {
+        "summary": "Agregar factura",
+        "description": "Método para agregar una factura",
+        "tags": [
+          "FacturasRelacionadas"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "token jwt obtenido en la respuesta de login",
+            "required": true,
+            "type": "string",
+            "default": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+          },
+          {
+            "in": "body",
+            "name": "Parámetros de entrada",
+            "description": "Información de entrada",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/requestFactura"
+            }
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Operación exitosa.",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"200\",\n  \"id\": \"er56535dgsf24r74fgd7475654\",\n  \"detalles\": [\n    \"Operación exitosa\"\n  ],\n  \"alertas\": [\n    \"El importe total de facturas debe ser menor o igual al importe o monto máximo del contrato.\",\n    \"La fecha de recepción debe ser menor o igual a la fecha fin de vigencia del contrato.\",\n    \"La fecha de recepción debe ser mayor o igual a la fecha inicio de vigencia del contrato.\",\n    \"La suma de los montos por ejercicio debe estar entre el monto mínimo y el monto máximo para contratos abiertos.\",\n    \"El importe de facturas debe ser menor o igual a la suma de suficiencia presupuestal.\",\n    \"El RFC emisor es diferente al del proveedor.\"\n  ]\n}"
+            }
+          },
+          "400": {
+            "description": "Bad request - Campos inválidos o insuficientes",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"400\",\n  \"id\": null,\n  \"detalles\": [\n    \"Solicitud inválida.\",\n    \"El proveedor debe ser igual en todas las entregas reales ingresadas.\",\n    \"El folio fiscal ya existe\",\n    \"Protesta decir verdad distinta de true\",\n    \"Verificar entrega real, id inexistente\",\n    \"Verificar sanciones, id inexistente\"\n  ],\n  \"alertas\": []\n}"
+            }
+          },
+          "401": {
+            "description": "Credenciales inválidas",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"401\",\n  \"id\": null,\n  \"detalles\": [\n    \"Credenciales inválidas, favor de verificar.\"\n  ],\n  \"alertas\": []\n}"
+            }
+          },
+          "404": {
+            "description": "Not found - Contrato no encontrado",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"404\",\n  \"id\": null,\n  \"detalles\": [\n    \"Contrato no encontrado, validar número de contrato y/o CURP del administrador de contrato.\"\n  ],\n  \"alertas\": []\n}"
+            }
+          },
+          "500": {
+            "description": "Error inesperado",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"500\",\n  \"id\": null,\n  \"detalles\": [\n    \"Error inesperado al consumir el servicio.\"\n  ],\n  \"alertas\": []\n}"
+            }
+          }
+        }
+      }
+    },
+    "/factura/edit/{idFactura}": {
+      "post": {
+        "summary": "Actualizar factura",
+        "description": "Método para actualizar una factura",
+        "tags": [
+          "FacturasRelacionadas"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "token jwt obtenido en la respuesta de login",
+            "required": true,
+            "type": "string",
+            "default": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+          },
+          {
+            "name": "idFactura",
+            "in": "path",
+            "description": "id de la factura a actualizar",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "Parámetros de entrada",
+            "description": "Información de entrada",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/requestFactura"
+            }
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Operación exitosa.",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"200\",\n  \"id\": \"er56535dgsf24r74fgd7475654\",\n  \"detalles\": [\n    \"Operación exitosa\"\n  ],\n  \"alertas\": [\n    \"El importe total de facturas debe ser menor o igual al importe o monto máximo del contrato.\",\n    \"La fecha de recepción debe ser menor o igual a la fecha fin de vigencia del contrato.\",\n    \"La fecha de recepción debe ser mayor o igual a la fecha inicio de vigencia del contrato.\",\n    \"La suma de los montos por ejercicio debe estar entre el monto mínimo y el monto máximo para contratos abiertos.\",\n    \"El importe de facturas debe ser menor o igual a la suma de suficiencia presupuestal.\",\n    \"El RFC emisor es diferente al del proveedor.\"\n  ]\n}"
+            }
+          },
+          "400": {
+            "description": "Bad request - Campos inválidos o insuficientes",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"400\",\n  \"id\": \"er56535dgsf24r74fgd7475654\",\n  \"detalles\": [\n    \"Solicitud inválida.\",\n    \"El proveedor debe ser igual en todas las entregas reales ingresadas.\",\n    \"El folio fiscal ya existe\",\n    \"Protesta decir verdad distinta de true\",\n    \"Verificar entrega real, id inexistente\",\n    \"Verificar sanciones, id inexistente\"\n  ],\n  \"alertas\": []\n}"
+            }
+          },
+          "401": {
+            "description": "Credenciales inválidas",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"401\",\n  \"id\": null,\n  \"detalles\": [\n    \"Credenciales inválidas, favor de verificar.\"\n  ],\n  \"alertas\": []\n}"
+            }
+          },
+          "404": {
+            "description": "Not found - Contrato no encontrado",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"404\",\n  \"id\": \"er56535dgsf24r74fgd7475654\",\n  \"detalles\": [\n    \"Contrato no encontrado, validar número de contrato y/o CURP del administrador de contrato.\"\n  ],\n  \"alertas\": []\n}"
+            }
+          },
+          "500": {
+            "description": "Error inesperado",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"500\",\n  \"id\": null,\n  \"detalles\": [\n    \"Error inesperado al consumir el servicio.\"\n  ],\n  \"alertas\": []\n}"
+            }
+          }
+        }
+      }
+    },
+    "/factura/delete/{idFactura}": {
+      "post": {
+        "summary": "Eliminar factura",
+        "description": "Método para eliminar una factura",
+        "tags": [
+          "FacturasRelacionadas"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "token jwt obtenido en la respuesta de login",
+            "required": true,
+            "type": "string",
+            "default": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+          },
+          {
+            "name": "idFactura",
+            "in": "path",
+            "description": "id de la factura a eliminar",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Operación exitosa.",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"200\",\n  \"id\": \"er56535dgsf24r74fgd7475654\",\n  \"detalles\": [\n    \"Operación exitosa\"\n  ],\n  \"alertas\": []\n}"
+            }
+          },
+          "400": {
+            "description": "Bad request - Campos inválidos o insuficientes",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"400\",\n  \"id\": \"er56535dgsf24r74fgd7475654\",\n  \"detalles\": [\n    \"Solicitud inválida.\",\n    \"La factura ya tiene pago registrado o la factura ya está aplicada\",\n    \"No existe la factura\"\n  ],\n  \"alertas\": []\n}"
+            }
+          },
+          "401": {
+            "description": "Credenciales inválidas",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"401\",\n  \"id\": null,\n  \"detalles\": [\n    \"Credenciales inválidas, favor de verificar.\"\n  ],\n  \"alertas\": []\n}"
+            }
+          },
+          "404": {
+            "description": "Not found - Contrato no encontrado",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"404\",\n  \"id\": \"er56535dgsf24r74fgd7475654\",\n  \"detalles\": [\n    \"Contrato no encontrado, validar número de contrato y/o CURP del administrador de contrato.\"\n  ],\n  \"alertas\": []\n}"
+            }
+          },
+          "500": {
+            "description": "Error inesperado",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"500\",\n  \"id\": null,\n  \"detalles\": [\n    \"Error inesperado al consumir el servicio.\"\n  ],\n  \"alertas\": []\n}"
+            }
+          }
+        }
+      }
+    },
+    "/facturasRelacionadas": {
+      "get": {
+        "summary": "Consultar facturas",
+        "description": "Método para consultar las facturas",
+        "tags": [
+          "FacturasRelacionadas"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "token jwt obtenido en la respuesta de login",
+            "required": true,
+            "type": "string",
+            "default": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Operación exitosa.",
+            "schema": {
+              "$ref": "#/definitions/respuestaGetFacturas"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"200\",\n  \"detalles\": [\n    \"Operación exitosa\"\n  ],\n  \"facturasRelacionadas\": [\n    {\n      \"id\": \"4642egrefdhfdf4r63634\",\n      \"entregaReal\": [\n        {\n          \"id\": \"dh36543gdfgf6364gfd3\",\n          \"monto\": 150000\n        }\n      ],\n      \"folioFiscal\": \"XXXX3732-XXXX-XXXX-XXXX-7F1FA9BXXXXX\",\n      \"importeFactura\": 150000,\n      \"rfcEmisor\": \"XXXX921118XXX\",\n      \"rfcReceptor\": \"XXX941229XXX\",\n      \"fechaRecepcion\": \"2023-02-01\",\n      \"aplicaSancion\": true,\n      \"sancionAplicada\": [\n        {\n          \"id\": \"dh36543gdfgf6364gfd3\"\n        }\n      ],\n      \"protestaDecirVerdad\": true\n    }\n  ]\n}"
+            }
+          },
+          "400": {
+            "description": "Bad request - Campos inválidos o insuficientes",
+            "schema": {
+              "$ref": "#/definitions/respuestaGetFacturas"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"400\",\n  \"detalles\": [\n    \"Solicitud inválida.\"\n  ],\n  \"facturasRelacionadas\": null\n}"
+            }
+          },
+          "401": {
+            "description": "Credenciales inválidas",
+            "schema": {
+              "$ref": "#/definitions/respuestaGetFacturas"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"401\",\n  \"detalles\": [\n    \"Credenciales inválidas, favor de verificar.\"\n  ],\n  \"facturasRelacionadas\": null\n}"
+            }
+          },
+          "404": {
+            "description": "Not found - Contrato no encontrado",
+            "schema": {
+              "$ref": "#/definitions/respuestaGetFacturas"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"404\",\n  \"detalles\": [\n    \"Contrato sin facturas relacionadas\"\n  ],\n  \"facturasRelacionadas\": null\n}"
+            }
+          },
+          "500": {
+            "description": "Error inesperado",
+            "schema": {
+              "$ref": "#/definitions/respuestaGetFacturas"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"500\",\n  \"detalles\": [\n    \"Error inesperado al consumir el servicio.\"\n  ],\n  \"facturasRelacionadas\": null\n}"
+            }
+          }
+        }
+      }
+    },
+    "/pagoFactura/add": {
+      "post": {
+        "summary": "Agregar pago factura",
+        "description": "Método para agregar pago factura",
+        "tags": [
+          "PagoFactura"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "token jwt obtenido en la respuesta de login",
+            "required": true,
+            "type": "string",
+            "default": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+          },
+          {
+            "in": "body",
+            "name": "Parámetros de entrada",
+            "description": "Información de entrada",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/requestPagoFactura"
+            }
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Operación exitosa.",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"200\",\n  \"id\": \"er56535dgsf24r74fgd7475654\",\n  \"detalles\": [\n    \"Operación exitosa\"\n  ],\n  \"alertas\": [\n    \"El importe total de pago de facturas debe ser menor o igual al importe o monto máximo del contrato.\",\n    \"La fecha de pago debe ser menor o igual a la fecha fin de vigencia del contrato.\",\n    \"La fecha de pago debe ser mayor o igual a la fecha inicio de vigencia del contrato.\",\n    \"La suma de los montos por ejercicio debe estar entre el monto mínimo y el monto máximo (para contratos abiertos).\",\n    \"El importe de pago de facturas debe ser menor o igual a la suma de suficiencia presupuestal.\",\n    \"La fecha de pago de facturas es mayor a 20 días con respecto a la fecha de recepción.\"\n  ]\n}"
+            }
+          },
+          "400": {
+            "description": "Bad request - Campos inválidos o insuficientes",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"400\",\n  \"id\": null,\n  \"detalles\": [\n    \"Solicitud inválida.\",\n    \"El proveedor, RFC emisor y RFC receptor debe ser igual en todas las facturas ingresadas.\",\n    \"Protesta decir verdad distinta de true\",\n    \"Verificar factura, id inexistente\"\n  ],\n  \"alertas\": []\n}"
+            }
+          },
+          "401": {
+            "description": "Credenciales inválidas",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"401\",\n  \"id\": null,\n  \"detalles\": [\n    \"Credenciales inválidas, favor de verificar.\"\n  ],\n  \"alertas\": []\n}"
+            }
+          },
+          "404": {
+            "description": "Not found - Contrato no encontrado",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"404\",\n  \"id\": null,\n  \"detalles\": [\n    \"Contrato no encontrado, validar número de contrato y/o CURP del administrador de contrato.\"\n  ],\n  \"alertas\": []\n}"
+            }
+          },
+          "500": {
+            "description": "Error inesperado",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"500\",\n  \"id\": null,\n  \"detalles\": [\n    \"Error inesperado al consumir el servicio.\"\n  ],\n  \"alertas\": []\n}"
+            }
+          }
+        }
+      }
+    },
+    "/pagoFactura/edit/{idPagoFactura}": {
+      "post": {
+        "summary": "Actualizar pago factura",
+        "description": "Método para actualizar pago de factura",
+        "tags": [
+          "PagoFactura"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "token jwt obtenido en la respuesta de login",
+            "required": true,
+            "type": "string",
+            "default": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+          },
+          {
+            "name": "idPagoFactura",
+            "in": "path",
+            "description": "id del pago de factura a actualizar",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "Parámetros de entrada",
+            "description": "Información de entrada",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/requestPagoFactura"
+            }
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Operación exitosa.",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"200\",\n  \"id\": \"er56535dgsf24r74fgd7475654\",\n  \"detalles\": [\n    \"Operación exitosa\"\n  ],\n  \"alertas\": [\n    \"El importe total de pago de facturas debe ser menor o igual al importe o monto máximo del contrato.\",\n    \"La fecha de pago debe ser menor o igual a la fecha fin de vigencia del contrato.\",\n    \"La fecha de pago debe ser mayor o igual a la fecha inicio de vigencia del contrato.\",\n    \"La suma de los montos por ejercicio debe estar entre el monto mínimo y el monto máximo (para contratos abiertos).\",\n    \"El importe de pago de facturas debe ser menor o igual a la suma de suficiencia presupuestal.\",\n    \"La fecha de pago de facturas es mayor a 20 días con respecto a la fecha de recepción.\"\n  ]\n}"
+            }
+          },
+          "400": {
+            "description": "Bad request - Campos inválidos o insuficientes",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"400\",\n  \"id\": \"er56535dgsf24r74fgd7475654\",\n  \"detalles\": [\n    \"Solicitud inválida.\",\n    \"El proveedor, RFC emisor y RFC receptor debe ser igual en todas las facturas ingresadas.\",\n    \"Protesta decir verdad distinta de true\",\n    \"Verificar factura, id inexistente\"\n  ],\n  \"alertas\": []\n}"
+            }
+          },
+          "401": {
+            "description": "Credenciales inválidas",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"401\",\n  \"id\": null,\n  \"detalles\": [\n    \"Credenciales inválidas, favor de verificar.\"\n  ],\n  \"alertas\": []\n}"
+            }
+          },
+          "404": {
+            "description": "Not found - Contrato no encontrado",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"404\",\n  \"id\": \"er56535dgsf24r74fgd7475654\",\n  \"detalles\": [\n    \"Contrato no encontrado, validar número de contrato y/o CURP del administrador de contrato.\"\n  ],\n  \"alertas\": []\n}"
+            }
+          },
+          "500": {
+            "description": "Error inesperado",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"500\",\n  \"id\": null,\n  \"detalles\": [\n    \"Error inesperado al consumir el servicio.\"\n  ],\n  \"alertas\": []\n}"
+            }
+          }
+        }
+      }
+    },
+    "/pagoFactura/delete/{idPagoFactura}": {
+      "post": {
+        "summary": "Eliminar pago factura",
+        "description": "Método para eliminar un pago de factura",
+        "tags": [
+          "PagoFactura"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "token jwt obtenido en la respuesta de login",
+            "required": true,
+            "type": "string",
+            "default": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+          },
+          {
+            "name": "idPagoFactura",
+            "in": "path",
+            "description": "id del pago factura a eliminar",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Operación exitosa.",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"200\",\n  \"id\": \"er56535dgsf24r74fgd7475654\",\n  \"detalles\": [\n    \"Operación exitosa\"\n  ],\n  \"alertas\": []\n}"
+            }
+          },
+          "400": {
+            "description": "Bad request - Campos inválidos o insuficientes",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"400\",\n  \"id\": \"er56535dgsf24r74fgd7475654\",\n  \"detalles\": [\n    \"Solicitud inválida.\",\n    \"No existe el pago de factura\"\n  ],\n  \"alertas\": []\n}"
+            }
+          },
+          "401": {
+            "description": "Credenciales inválidas",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"401\",\n  \"id\": null,\n  \"detalles\": [\n    \"Credenciales inválidas, favor de verificar.\"\n  ],\n  \"alertas\": []\n}"
+            }
+          },
+          "404": {
+            "description": "Not found - Contrato no encontrado",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"404\",\n  \"id\": \"er56535dgsf24r74fgd7475654\",\n  \"detalles\": [\n    \"Contrato no encontrado, validar número de contrato y/o CURP del administrador de contrato.\"\n  ],\n  \"alertas\": []\n}"
+            }
+          },
+          "500": {
+            "description": "Error inesperado",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"500\",\n  \"id\": null,\n  \"detalles\": [\n    \"Error inesperado al consumir el servicio.\"\n  ],\n  \"alertas\": []\n}"
+            }
+          }
+        }
+      }
+    },
+    "/pagoFactura": {
+      "get": {
+        "summary": "Consultar pagos de facturas",
+        "description": "Método para consultar pagos de facturas",
+        "tags": [
+          "PagoFactura"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "token jwt obtenido en la respuesta de login",
+            "required": true,
+            "type": "string",
+            "default": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Operación exitosa.",
+            "schema": {
+              "$ref": "#/definitions/respuestaGetPagoFacturas"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"200\",\n  \"detalles\": [\n    \"Operación exitosa\"\n  ],\n  \"pagoFactura\": [\n    {\n      \"id\": \"4642egrefdhfdf4r63634\",\n      \"factura\": [\n        {\n          \"id\": \"dh36543gdfgf6364gfd3\",\n          \"monto\": 1000\n        }\n      ],\n      \"montoDespuesImpuesto\": 1050,\n      \"fechaPago\": \"2023-02-01\",\n      \"observaciones\": \"Observaciones\",\n      \"protestaDecirVerdad\": true\n    }\n  ]\n}"
+            }
+          },
+          "400": {
+            "description": "Bad request - Campos inválidos o insuficientes",
+            "schema": {
+              "$ref": "#/definitions/respuestaGetPagoFacturas"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"400\",\n  \"detalles\": [\n    \"Solicitud inválida.\"\n  ],\n  \"pagoFactura\": null\n}"
+            }
+          },
+          "401": {
+            "description": "Credenciales inválidas",
+            "schema": {
+              "$ref": "#/definitions/respuestaGetPagoFacturas"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"401\",\n  \"detalles\": [\n    \"Credenciales inválidas, favor de verificar.\"\n  ],\n  \"pagoFactura\": null\n}"
+            }
+          },
+          "404": {
+            "description": "Not found - Contrato no encontrado",
+            "schema": {
+              "$ref": "#/definitions/respuestaGetPagoFacturas"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"404\",\n  \"detalles\": [\n    \"Contrato sin pago de facturas\"\n  ],\n  \"pagoFactura\": null\n}"
+            }
+          },
+          "500": {
+            "description": "Error inesperado",
+            "schema": {
+              "$ref": "#/definitions/respuestaGetPagoFacturas"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"500\",\n  \"detalles\": [\n    \"Error inesperado al consumir el servicio.\"\n  ],\n  \"pagoFactura\": null\n}"
+            }
+          }
+        }
+      }
+    },
+    "/sancionAplicada/add": {
+      "post": {
+        "summary": "Agregar sanción aplicada",
+        "description": "Método para agregar una sanción aplicada",
+        "tags": [
+          "SancionAplicada"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "token jwt obtenido en la respuesta de login",
+            "required": true,
+            "type": "string",
+            "default": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+          },
+          {
+            "in": "body",
+            "name": "Parámetros de entrada",
+            "description": "Información de entrada",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/requestSancionAplicada"
+            }
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Operación exitosa.",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"200\",\n  \"id\": \"er56535dgsf24r74fgd7475654\",\n  \"detalles\": [\n    \"Operación exitosa\"\n  ],\n  \"alertas\": [\n    \"El importe de penas convencionales por atraso en la entrega de bienes o servicios debe ser menor o igual al importe de garantías por incumplimiento.\",\n    \"La fecha de cobro es mayor a la fecha actual.\"\n  ]\n}"
+            }
+          },
+          "400": {
+            "description": "Bad request - Campos inválidos o insuficientes",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"400\",\n  \"id\": null,\n  \"detalles\": [\n    \"Solicitud inválida.\",\n    \"Protesta decir verdad distinta de true\",\n    \"No existe la sanción en el contrato\"\n  ],\n  \"alertas\": []\n}"
+            }
+          },
+          "401": {
+            "description": "Credenciales inválidas",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"401\",\n  \"id\": null,\n  \"detalles\": [\n    \"Credenciales inválidas, favor de verificar.\"\n  ],\n  \"alertas\": []\n}"
+            }
+          },
+          "404": {
+            "description": "Not found - Contrato no encontrado",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"404\",\n  \"id\": null,\n  \"detalles\": [\n    \"Contrato no encontrado, validar número de contrato y/o CURP del administrador de contrato.\"\n  ],\n  \"alertas\": []\n}"
+            }
+          },
+          "500": {
+            "description": "Error inesperado",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"500\",\n  \"id\": null,\n  \"detalles\": [\n    \"Error inesperado al consumir el servicio.\"\n  ],\n  \"alertas\": []\n}"
+            }
+          }
+        }
+      }
+    },
+    "/sancionAplicada/edit/{idSancionAplicada}": {
+      "post": {
+        "summary": "Actualizar sanción aplicada",
+        "description": "Método para actualizar una sanción aplicada",
+        "tags": [
+          "SancionAplicada"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "token jwt obtenido en la respuesta de login",
+            "required": true,
+            "type": "string",
+            "default": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+          },
+          {
+            "name": "idSancionAplicada",
+            "in": "path",
+            "description": "id de la sanción aplicada a actualizar",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "Parámetros de entrada",
+            "description": "Información de entrada",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/requestSancionAplicada"
+            }
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Operación exitosa.",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"200\",\n  \"id\": \"er56535dgsf24r74fgd7475654\",\n  \"detalles\": [\n    \"Operación exitosa\"\n  ],\n  \"alertas\": [\n    \"El importe de penas convencionales por atraso en la entrega de bienes o servicios debe ser menor o igual al importe de garantías por incumplimiento.\",\n    \"La fecha de cobro es mayor a la fecha actual.\"\n  ]\n}"
+            }
+          },
+          "400": {
+            "description": "Bad request - Campos inválidos o insuficientes",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"400\",\n  \"id\": \"er56535dgsf24r74fgd7475654\",\n  \"detalles\": [\n    \"Solicitud inválida.\",\n    \"Protesta decir verdad distinta de true\",\n    \"No existe la sanción en el contrato\"\n  ],\n  \"alertas\": []\n}"
+            }
+          },
+          "401": {
+            "description": "Credenciales inválidas",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"401\",\n  \"id\": null,\n  \"detalles\": [\n    \"Credenciales inválidas, favor de verificar.\"\n  ],\n  \"alertas\": []\n}"
+            }
+          },
+          "404": {
+            "description": "Not found - Contrato no encontrado",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"404\",\n  \"id\": \"er56535dgsf24r74fgd7475654\",\n  \"detalles\": [\n    \"Contrato no encontrado, validar número de contrato y/o CURP del administrador de contrato.\"\n  ],\n  \"alertas\": []\n}"
+            }
+          },
+          "500": {
+            "description": "Error inesperado",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"500\",\n  \"id\": null,\n  \"detalles\": [\n    \"Error inesperado al consumir el servicio.\"\n  ],\n  \"alertas\": []\n}"
+            }
+          }
+        }
+      }
+    },
+    "/sancionAplicada/delete/{idSancionAplicada}": {
+      "post": {
+        "summary": "Eliminar sanción aplicada",
+        "description": "Método para eliminar una sanción aplicada",
+        "tags": [
+          "SancionAplicada"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "token jwt obtenido en la respuesta de login",
+            "required": true,
+            "type": "string",
+            "default": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+          },
+          {
+            "name": "idSancionAplicada",
+            "in": "path",
+            "description": "id de la sanción aplicada a eliminar",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Operación exitosa.",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"200\",\n  \"id\": \"er56535dgsf24r74fgd7475654\",\n  \"detalles\": [\n    \"Operación exitosa\"\n  ],\n  \"alertas\": []\n}"
+            }
+          },
+          "400": {
+            "description": "Bad request - Campos inválidos o insuficientes",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"400\",\n  \"id\": \"er56535dgsf24r74fgd7475654\",\n  \"detalles\": [\n    \"Solicitud inválida.\",\n    \"La sanción ya está aplicada\",\n    \"No existe la sanción aplicada\"\n  ],\n  \"alertas\": []\n}"
+            }
+          },
+          "401": {
+            "description": "Credenciales inválidas",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"401\",\n  \"id\": null,\n  \"detalles\": [\n    \"Credenciales inválidas, favor de verificar.\"\n  ],\n  \"alertas\": []\n}"
+            }
+          },
+          "404": {
+            "description": "Not found - Contrato no encontrado",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"404\",\n  \"id\": \"er56535dgsf24r74fgd7475654\",\n  \"detalles\": [\n    \"Contrato no encontrado, validar número de contrato y/o CURP del administrador de contrato.\"\n  ],\n  \"alertas\": []\n}"
+            }
+          },
+          "500": {
+            "description": "Error inesperado",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"500\",\n  \"id\": null,\n  \"detalles\": [\n    \"Error inesperado al consumir el servicio.\"\n  ],\n  \"alertas\": []\n}"
+            }
+          }
+        }
+      }
+    },
+    "/sancionAplicada": {
+      "get": {
+        "summary": "Consultar sanciones aplicadas",
+        "description": "Método para consultar sanciones aplicadas",
+        "tags": [
+          "SancionAplicada"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "token jwt obtenido en la respuesta de login",
+            "required": true,
+            "type": "string",
+            "default": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Operación exitosa.",
+            "schema": {
+              "$ref": "#/definitions/respuestaGetSancionesAplicadas"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"200\",\n  \"detalles\": [\n    \"Operación exitosa\"\n  ],\n  \"sancionesAplicadas\": [\n    {\n      \"id\": \"4642egrefdhfdf4r63634\",\n      \"tipoSancion\": \"PENA_CONVENCIONAL\",\n      \"conceptoConv\": \"ATRASO\",\n      \"concepto\": null,\n      \"sancion\": \"Sanción del 1 %\",\n      \"fechaCobro\": \"2023-02-16\",\n      \"importe\": 450,\n      \"aplicaRescision\": \"NO\",\n      \"observaciones\": \"Observaciones\",\n      \"protestaDecirVerdad\": true\n    }\n  ]\n}"
+            }
+          },
+          "400": {
+            "description": "Bad request - Campos inválidos o insuficientes",
+            "schema": {
+              "$ref": "#/definitions/respuestaGetSancionesAplicadas"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"400\",\n  \"detalles\": [\n    \"Solicitud inválida.\"\n  ],\n  \"sancionesAplicadas\": null\n}"
+            }
+          },
+          "401": {
+            "description": "Credenciales inválidas",
+            "schema": {
+              "$ref": "#/definitions/respuestaGetSancionesAplicadas"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"401\",\n  \"detalles\": [\n    \"Credenciales inválidas, favor de verificar.\"\n  ],\n  \"sancionesAplicadas\": null\n}"
+            }
+          },
+          "404": {
+            "description": "Not found - Contrato no encontrado",
+            "schema": {
+              "$ref": "#/definitions/respuestaGetSancionesAplicadas"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"404\",\n  \"detalles\": [\n    \"Contrato sin sanciones registradas\"\n  ],\n  \"sancionesAplicadas\": null\n}"
+            }
+          },
+          "500": {
+            "description": "Error inesperado",
+            "schema": {
+              "$ref": "#/definitions/respuestaGetSancionesAplicadas"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"500\",\n  \"detalles\": [\n    \"Error inesperado al consumir el servicio.\"\n  ],\n  \"sancionesAplicadas\": null\n}"
+            }
+          }
+        }
+      }
+    },
+    "/notaCredito/add": {
+      "post": {
+        "summary": "Agregar nota de crédito",
+        "description": "Método para agregar una nota de crédito",
+        "tags": [
+          "NotaCredito"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "token jwt obtenido en la respuesta de login",
+            "required": true,
+            "type": "string",
+            "default": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+          },
+          {
+            "in": "body",
+            "name": "Parámetros de entrada",
+            "description": "Información de entrada",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/requestNotaCredito"
+            }
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Operación exitosa.",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"200\",\n  \"id\": \"er56535dgsf24r74fgd7475654\",\n  \"detalles\": [\n    \"Operación exitosa\"\n  ],\n  \"alertas\": []\n}"
+            }
+          },
+          "400": {
+            "description": "Bad request - Campos inválidos o insuficientes",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"400\",\n  \"id\": null,\n  \"detalles\": [\n    \"Solicitud inválida.\",\n    \"Protesta decir verdad distinta de true\",\n    \"Verificar sanciones, id inexistente\"\n  ],\n  \"alertas\": []\n}"
+            }
+          },
+          "401": {
+            "description": "Credenciales inválidas",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"401\",\n  \"id\": null,\n  \"detalles\": [\n    \"Credenciales inválidas, favor de verificar.\"\n  ],\n  \"alertas\": []\n}"
+            }
+          },
+          "404": {
+            "description": "Not found - Contrato no encontrado",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"404\",\n  \"id\": null,\n  \"detalles\": [\n    \"Contrato no encontrado, validar número de contrato y/o CURP del administrador de contrato.\"\n  ],\n  \"alertas\": []\n}"
+            }
+          },
+          "500": {
+            "description": "Error inesperado",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"500\",\n  \"id\": null,\n  \"detalles\": [\n    \"Error inesperado al consumir el servicio.\"\n  ],\n  \"alertas\": []\n}"
+            }
+          }
+        }
+      }
+    },
+    "/notaCredito/edit/{idNotaCredito}": {
+      "post": {
+        "summary": "Actualizar nota de crédito",
+        "description": "Método para actualizar una nota de crédito",
+        "tags": [
+          "NotaCredito"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "token jwt obtenido en la respuesta de login",
+            "required": true,
+            "type": "string",
+            "default": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+          },
+          {
+            "name": "idNotaCredito",
+            "in": "path",
+            "description": "id de la nota de crédito a actualizar",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "Parámetros de entrada",
+            "description": "Información de entrada",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/requestNotaCredito"
+            }
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Operación exitosa.",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"200\",\n  \"id\": \"er56535dgsf24r74fgd7475654\",\n  \"detalles\": [\n    \"Operación exitosa\"\n  ],\n  \"alertas\": []\n}"
+            }
+          },
+          "400": {
+            "description": "Bad request - Campos inválidos o insuficientes",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"400\",\n  \"id\": \"er56535dgsf24r74fgd7475654\",\n  \"detalles\": [\n    \"Solicitud inválida.\",\n    \"Protesta decir verdad distinta de true\",\n    \"Verificar sanciones, id inexistente\"\n  ],\n  \"alertas\": []\n}"
+            }
+          },
+          "401": {
+            "description": "Credenciales inválidas",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"401\",\n  \"id\": null,\n  \"detalles\": [\n    \"Credenciales inválidas, favor de verificar.\"\n  ],\n  \"alertas\": []\n}"
+            }
+          },
+          "404": {
+            "description": "Not found - Contrato no encontrado",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"404\",\n  \"id\": \"er56535dgsf24r74fgd7475654\",\n  \"detalles\": [\n    \"Contrato no encontrado, validar número de contrato y/o CURP del administrador de contrato.\"\n  ],\n  \"alertas\": []\n}"
+            }
+          },
+          "500": {
+            "description": "Error inesperado",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"500\",\n  \"id\": null,\n  \"detalles\": [\n    \"Error inesperado al consumir el servicio.\"\n  ],\n  \"alertas\": []\n}"
+            }
+          }
+        }
+      }
+    },
+    "/notaCredito/delete/{idNotaCredito}": {
+      "post": {
+        "summary": "Eliminar nota de crédito",
+        "description": "Método para eliminar una nota de crédito",
+        "tags": [
+          "NotaCredito"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "token jwt obtenido en la respuesta de login",
+            "required": true,
+            "type": "string",
+            "default": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+          },
+          {
+            "name": "idNotaCredito",
+            "in": "path",
+            "description": "id de la nota de crédito a eliminar",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Operación exitosa.",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"200\",\n  \"id\": \"er56535dgsf24r74fgd7475654\",\n  \"detalles\": [\n    \"Operación exitosa\"\n  ],\n  \"alertas\": []\n}"
+            }
+          },
+          "400": {
+            "description": "Bad request - Campos inválidos o insuficientes",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"400\",\n  \"id\": \"er56535dgsf24r74fgd7475654\",\n  \"detalles\": [\n    \"Solicitud inválida.\",\n    \"No existe la nota de crédito\"\n  ],\n  \"alertas\": []\n}"
+            }
+          },
+          "401": {
+            "description": "Credenciales inválidas",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"401\",\n  \"id\": null,\n  \"detalles\": [\n    \"Credenciales inválidas, favor de verificar.\"\n  ],\n  \"alertas\": []\n}"
+            }
+          },
+          "404": {
+            "description": "Not found - Contrato no encontrado",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"404\",\n  \"id\": \"er56535dgsf24r74fgd7475654\",\n  \"detalles\": [\n    \"Contrato no encontrado, validar número de contrato y/o CURP del administrador de contrato.\"\n  ],\n  \"alertas\": []\n}"
+            }
+          },
+          "500": {
+            "description": "Error inesperado",
+            "schema": {
+              "$ref": "#/definitions/respuestaGeneral"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"500\",\n  \"id\": null,\n  \"detalles\": [\n    \"Error inesperado al consumir el servicio.\"\n  ],\n  \"alertas\": []\n}"
+            }
+          }
+        }
+      }
+    },
+    "/notasCredito": {
+      "get": {
+        "summary": "Consultar notas de crédito",
+        "description": "Método para consultar notas de crédito",
+        "tags": [
+          "NotaCredito"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "token jwt obtenido en la respuesta de login",
+            "required": true,
+            "type": "string",
+            "default": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Operación exitosa.",
+            "schema": {
+              "$ref": "#/definitions/respuestaGetNotasCredito"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"200\",\n  \"detalles\": [\n    \"Operación exitosa\"\n  ],\n  \"notasCredito\": [\n    {\n      \"id\": \"4642egrefdhfdf4r63634\",\n      \"sanciones\": [\n        {\n          \"id\": \"dh36543gdfgf6364gfd3\"\n        }\n      ],\n      \"observaciones\": \"Observaciones\",\n      \"protestaDecirVerdad\": true\n    }\n  ]\n}"
+            }
+          },
+          "400": {
+            "description": "Bad request - Campos inválidos o insuficientes",
+            "schema": {
+              "$ref": "#/definitions/respuestaGetNotasCredito"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"400\",\n  \"detalles\": [\n    \"Solicitud inválida.\"\n  ],\n  \"notasCredito\": null\n}"
+            }
+          },
+          "401": {
+            "description": "Credenciales inválidas",
+            "schema": {
+              "$ref": "#/definitions/respuestaGetNotasCredito"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"401\",\n  \"detalles\": [\n    \"Credenciales inválidas, favor de verificar.\"\n  ],\n  \"notasCredito\": null\n}"
+            }
+          },
+          "404": {
+            "description": "Not found - Contrato no encontrado",
+            "schema": {
+              "$ref": "#/definitions/respuestaGetNotasCredito"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"404\",\n  \"detalles\": [\n    \"Contrato sin notas de crédito registradas\"\n  ],\n  \"notasCredito\": null\n}"
+            }
+          },
+          "500": {
+            "description": "Error inesperado",
+            "schema": {
+              "$ref": "#/definitions/respuestaGetNotasCredito"
+            },
+            "examples": {
+              "application/json": "{\n  \"codigo\": \"500\",\n  \"detalles\": [\n    \"Error inesperado al consumir el servicio.\"\n  ],\n  \"notasCredito\": null\n}"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "requestLogin": {
+      "type": "object",
+      "properties": {
+        "datos": {
+          "$ref": "#/definitions/datos"
+        }
+      }
+    },
+    "datos": {
+      "type": "object",
+      "required": [
+        "credenciales",
+        "contratoFormalizado",
+        "curp"
+      ],
+      "properties": {
+        "credenciales": {
+          "$ref": "#/definitions/credenciales"
+        },
+        "contratoFormalizado": {
+          "type": "string",
+          "description": "Número de contrato formalizado",
+          "example": "CONTRATOX"
+        },
+        "curp": {
+          "type": "string",
+          "description": "Curp del usuario administrador del contrato",
+          "example": "XXXX801230XXXXXX00"
+        }
+      }
+    },
+    "requestPedido": {
+      "type": "object",
+      "required": [
+        "contratoFormalizado",
+        "pedidoContratoAbierto",
+        "protestaDecirVerdad"
+      ],
+      "properties": {
+        "contratoFormalizado": {
+          "type": "string",
+          "description": "Número de contrato formalizado",
+          "example": "CONTRATOX"
+        },
+        "pedidoContratoAbierto": {
+          "$ref": "#/definitions/pedidoContratoAbierto"
+        },
+        "protestaDecirVerdad": {
+          "type": "boolean",
+          "description": "protesta de decir verdad, debe estar en true para poder guardar",
+          "example": true
+        }
+      }
+    },
+    "pedidoContratoAbierto": {
+      "type": "object",
+      "required": [
+        "cantidad",
+        "claveCucop",
+        "fechaEntregaProgramada",
+        "fechaSolicitud",
+        "lugarYUbicacionEntregaProgramada",
+        "modo",
+        "proveedor",
+        "precioUnitarioProgramado"
+      ],
+      "properties": {
+        "cantidad": {
+          "type": "number",
+          "description": "Indica la cantidad programada",
+          "example": 10
+        },
+        "claveCucop": {
+          "type": "string",
+          "description": "Es la clave cucop, registrada en el contrato",
+          "example": "31300001"
+        },
+        "conceptoEspecifico": {
+          "type": "string",
+          "description": "Describe un concepto más detallado del cucop",
+          "example": "Medicamento de alta especialidad"
+        },
+        "fechaEntregaProgramada": {
+          "type": "string",
+          "description": "Fecha de entrega programada con formato AAAA-MM-DD",
+          "example": "2023-02-13"
+        },
+        "fechaSolicitud": {
+          "type": "string",
+          "description": "Fecha de solicitud con formato AAAA-MM-DD",
+          "example": "2023-02-10"
+        },
+        "lugarYUbicacionEntregaProgramada": {
+          "type": "string",
+          "description": "Indica el lugar y la ubicación de la entrega programada",
+          "example": "Oficina de recursos humanos"
+        },
+        "modo": {
+          "type": "string",
+          "enum": [
+            "INICIAL",
+            "MODIFICATORIO"
+          ],
+          "description": "Indica si el registro es inicial o de un convenio modificatorio",
+          "example": "INICIAL"
+        },
+        "proveedor": {
+          "type": "string",
+          "description": "Es el RFC del proveedor",
+          "example": "XXX951218XXX"
+        },
+        "precioUnitarioProgramado": {
+          "type": "number",
+          "description": "Es el precio unitario, se utiliza junto con la cantidad para calcular el importe de la entrega, la moneda se tomará de la moneda que se haya declarado en el contrato",
+          "example": 384987.26
+        }
+      }
+    },
+    "pedidoContratoAbiertoGet": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "id del pedido",
+          "example": "dh36543gdfgf6364gfd3"
+        },
+        "cantidad": {
+          "type": "number",
+          "description": "Indica la cantidad programada",
+          "example": 10
+        },
+        "claveCucop": {
+          "type": "string",
+          "description": "Es la clave cucop, registrada en el contrato",
+          "example": "31300001"
+        },
+        "conceptoEspecifico": {
+          "type": "string",
+          "description": "Describe un concepto más detallado del cucop",
+          "example": "Medicamento de alta especialidad"
+        },
+        "fechaEntregaProgramada": {
+          "type": "string",
+          "description": "Fecha de entrega programada con formato AAAA-MM-DD",
+          "example": "2023-02-13"
+        },
+        "fechaSolicitud": {
+          "type": "string",
+          "description": "Fecha de solicitud con formato AAAA-MM-DD",
+          "example": "2023-02-10"
+        },
+        "lugarYUbicacionEntregaProgramada": {
+          "type": "string",
+          "description": "Indica el lugar y la ubicación de la entrega programada",
+          "example": "Oficina de recursos humanos"
+        },
+        "modo": {
+          "type": "string",
+          "enum": [
+            "INICIAL",
+            "MODIFICATORIO"
+          ],
+          "description": "Indica si el registro es inicial o de un convenio modificatorio",
+          "example": "INICIAL"
+        },
+        "proveedor": {
+          "type": "string",
+          "description": "Es el RFC del proveedor",
+          "example": "XXX951218XXX"
+        },
+        "precioUnitarioProgramado": {
+          "type": "number",
+          "description": "Es el precio unitario, se utiliza junto con la cantidad para calcular el importe de la entrega, la moneda se tomará de la moneda que se haya declarado en el contrato",
+          "example": 384987.26
+        },
+        "protestaDecirVerdad": {
+          "type": "boolean",
+          "description": "protesta decir verdad",
+          "example": true
+        }
+      }
+    },
+    "requestAvance": {
+      "type": "object",
+      "required": [
+        "contratoFormalizado",
+        "entregaReal",
+        "protestaDecirVerdad"
+      ],
+      "properties": {
+        "contratoFormalizado": {
+          "type": "string",
+          "description": "Número de contrato formalizado",
+          "example": "CONTRATOX"
+        },
+        "entregaReal": {
+          "$ref": "#/definitions/entregaReal"
+        },
+        "protestaDecirVerdad": {
+          "type": "boolean",
+          "description": "protesta de decir verdad, debe estar en true para poder guardar",
+          "example": true
+        }
+      }
+    },
+    "entregaReal": {
+      "type": "object",
+      "required": [
+        "entregaProgramada",
+        "condicionEntrega",
+        "descripcionEntrega",
+        "fechaEntrega",
+        "lugarYUbicacionEntrega",
+        "proveedor",
+        "tipoDocumento"
+      ],
+      "properties": {
+        "entregaProgramada": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/entregaProgramada"
+          }
+        },
+        "condicionEntrega": {
+          "type": "string",
+          "description": "Indica la condición de entrega",
+          "example": "ADECUADA",
+          "enum": [
+            "ADECUADA",
+            "NO_ADECUADA"
+          ]
+        },
+        "descripcionEntrega": {
+          "type": "string",
+          "description": "Descripción de la entrega real",
+          "example": "Se realizó la entrega en buenas condiciones"
+        },
+        "fechaEntrega": {
+          "type": "string",
+          "description": "Fecha de entrega con formato AAAA-MM-DD",
+          "example": "2023-02-13"
+        },
+        "lugarYUbicacionEntrega": {
+          "type": "string",
+          "description": "Indica el lugar y la ubicación de la entrega real",
+          "example": "Oficina de recursos humanos"
+        },
+        "proveedor": {
+          "type": "string",
+          "description": "Es el RFC del proveedor",
+          "example": "XXX951218XXX"
+        },
+        "tipoDocumento": {
+          "type": "string",
+          "enum": [
+            "ACTA_DE_ENTREGA",
+            "ORDEN_COMPRA",
+            "NOTA_REMISION",
+            "OTRO_DOCUMENTO"
+          ],
+          "description": "Indica el tipo de documento a cargar",
+          "example": "ACTA_DE_ENTREGA"
+        }
+      }
+    },
+    "entregaProgramada": {
+      "type": "object",
+      "required": [
+        "id",
+        "cantidad",
+        "precioUnitario"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "id de la entrega programada",
+          "example": "dh36543gdfgf6364gfd3"
+        },
+        "cantidad": {
+          "type": "number",
+          "description": "cantidad de la entrega programada",
+          "example": 5
+        },
+        "precioUnitario": {
+          "type": "number",
+          "description": "precio unitario",
+          "example": 1000
+        }
+      }
+    },
+    "entregaProgramadaGet": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "id de la entrega programada",
+          "example": "dh36543gdfgf6364gfd3"
+        },
+        "cantidad": {
+          "type": "number",
+          "description": "cantidad de la entrega programada",
+          "example": 5
+        },
+        "precioUnitario": {
+          "type": "number",
+          "description": "precio unitario",
+          "example": 1000
+        }
+      }
+    },
+    "entregaRealGet": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "id de la entrega real",
+          "example": "dh36543gdfgf6364gfd3"
+        },
+        "entregaProgramada": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/entregaProgramadaGet"
+          }
+        },
+        "condicionEntrega": {
+          "type": "string",
+          "description": "Indica la condición de entrega",
+          "example": "ADECUADA",
+          "enum": [
+            "ADECUADA",
+            "NO_ADECUADA"
+          ]
+        },
+        "descripcionEntrega": {
+          "type": "string",
+          "description": "Descripción de la entrega real",
+          "example": "Se realizó la entrega en buenas condiciones"
+        },
+        "fechaEntrega": {
+          "type": "string",
+          "description": "Fecha de entrega con formato AAAA-MM-DD",
+          "example": "2023-02-13"
+        },
+        "lugarYUbicacionEntrega": {
+          "type": "string",
+          "description": "Indica el lugar y la ubicación de la entrega real",
+          "example": "Oficina de recursos humanos"
+        },
+        "proveedor": {
+          "type": "string",
+          "description": "Es el RFC del proveedor",
+          "example": "XXX951218XXX"
+        },
+        "tipoDocumento": {
+          "type": "string",
+          "enum": [
+            "ACTA_DE_ENTREGA",
+            "ORDEN_COMPRA",
+            "NOTA_REMISION",
+            "OTRO_DOCUMENTO"
+          ],
+          "description": "Indica el tipo de documento a cargar",
+          "example": "ACTA_DE_ENTREGA"
+        },
+        "protestaDecirVerdad": {
+          "type": "boolean",
+          "description": "protesta decir verdad",
+          "example": true
+        }
+      }
+    },
+    "requestFactura": {
+      "type": "object",
+      "required": [
+        "contratoFormalizado",
+        "facturasRelacionadas",
+        "protestaDecirVerdad"
+      ],
+      "properties": {
+        "contratoFormalizado": {
+          "type": "string",
+          "description": "Número de contrato formalizado",
+          "example": "CONTRATOX"
+        },
+        "facturasRelacionadas": {
+          "$ref": "#/definitions/facturasRelacionadas"
+        },
+        "protestaDecirVerdad": {
+          "type": "boolean",
+          "description": "protesta de decir verdad, debe estar en true para poder guardar",
+          "example": true
+        }
+      }
+    },
+    "facturasRelacionadas": {
+      "type": "object",
+      "required": [
+        "entregaReal",
+        "folioFiscal",
+        "importeFactura",
+        "rfcEmisor",
+        "rfcReceptor",
+        "fechaRecepcion",
+        "aplicaSancion"
+      ],
+      "properties": {
+        "entregaReal": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/entregaRealFactura"
+          }
+        },
+        "folioFiscal": {
+          "type": "string",
+          "description": "Es el folio único de la factura generada por el SAT",
+          "example": "XXXX3732-XXXX-XXXX-XXXX-7F1FA9BXXXXX"
+        },
+        "importeFactura": {
+          "type": "number",
+          "description": "La moneda se tomará de la moneda que se haya declarado en el contrato",
+          "example": 200000
+        },
+        "rfcEmisor": {
+          "type": "string",
+          "description": "Es el RFC del que emite la factura",
+          "example": "XXXX921118XXX"
+        },
+        "rfcReceptor": {
+          "type": "string",
+          "description": "Es el RFC del que recibe la factura",
+          "example": "XXX941229XXX"
+        },
+        "fechaRecepcion": {
+          "type": "string",
+          "description": "Fecha de recepción con formato AAAA-MM-DD",
+          "example": "2023-02-01"
+        },
+        "aplicaSancion": {
+          "type": "string",
+          "description": "Indica si a la factura se le va aplicar sanción",
+          "example": true
+        },
+        "sancionAplicada": {
+          "type": "array",
+          "description": "Es obligatorio si aplica sanción va en true",
+          "items": {
+            "$ref": "#/definitions/sancionAplicadaFactura"
+          }
+        }
+      }
+    },
+    "entregaRealFactura": {
+      "type": "object",
+      "required": [
+        "id",
+        "monto"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "id de la entrega real",
+          "example": "dh36543gdfgf6364gfd3"
+        },
+        "monto": {
+          "type": "number",
+          "description": "Importe de la entrega real",
+          "example": 150000
+        }
+      }
+    },
+    "sancionAplicadaFactura": {
+      "type": "object",
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "id de la sancion aplicada",
+          "example": "dh36543gdfgf6364gfd3"
+        }
+      }
+    },
+    "facturasGet": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "id de la factura",
+          "example": "dh36543gdfgf6364gfd3"
+        },
+        "entregaReal": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/entregaRealFacturaGet"
+          }
+        },
+        "folioFiscal": {
+          "type": "string",
+          "description": "Es el folio único de la factura generada por el SAT",
+          "example": "XXXX3732-XXXX-XXXX-XXXX-7F1FA9BXXXXX"
+        },
+        "importeFactura": {
+          "type": "number",
+          "description": "La moneda se tomará de la moneda que se haya declarado en el contrato",
+          "example": 200000
+        },
+        "rfcEmisor": {
+          "type": "string",
+          "description": "Es el RFC del que emite la factura",
+          "example": "XXXX921118XXX"
+        },
+        "rfcReceptor": {
+          "type": "string",
+          "description": "Es el RFC del que recibe la factura",
+          "example": "XXX941229XXX"
+        },
+        "fechaRecepcion": {
+          "type": "string",
+          "description": "Fecha de recepción con formato AAAA-MM-DD",
+          "example": "2023-02-01"
+        },
+        "aplicaSancion": {
+          "type": "string",
+          "description": "Indica si a la factura se le va aplicar sanción",
+          "example": true
+        },
+        "sancionAplicada": {
+          "type": "array",
+          "description": "Es obligatorio si aplica sanción va en true",
+          "items": {
+            "$ref": "#/definitions/sancionAplicadaFacturaGet"
+          }
+        },
+        "protestaDecirVerdad": {
+          "type": "boolean",
+          "description": "protesta decir verdad",
+          "example": true
+        }
+      }
+    },
+    "entregaRealFacturaGet": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "id de la entrega real",
+          "example": "dh36543gdfgf6364gfd3"
+        },
+        "monto": {
+          "type": "number",
+          "description": "Importe de la entrega real",
+          "example": 150000
+        }
+      }
+    },
+    "sancionAplicadaFacturaGet": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "id de la sancion aplicada",
+          "example": "dh36543gdfgf6364gfd3"
+        }
+      }
+    },
+    "requestPagoFactura": {
+      "type": "object",
+      "required": [
+        "contratoFormalizado",
+        "pagoFactura",
+        "protestaDecirVerdad"
+      ],
+      "properties": {
+        "contratoFormalizado": {
+          "type": "string",
+          "description": "Número de contrato formalizado",
+          "example": "CONTRATOX"
+        },
+        "pagoFactura": {
+          "$ref": "#/definitions/pagoFactura"
+        },
+        "protestaDecirVerdad": {
+          "type": "boolean",
+          "description": "protesta de decir verdad, debe estar en true para poder guardar",
+          "example": true
+        }
+      }
+    },
+    "pagoFactura": {
+      "type": "object",
+      "required": [
+        "factura",
+        "montoDespuesImpuesto",
+        "fechaPago"
+      ],
+      "properties": {
+        "factura": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/factura"
+          }
+        },
+        "montoDespuesImpuesto": {
+          "type": "number",
+          "description": "Indica el monto después de impuesto, la moneda se tomará de la moneda que se haya declarado en el contrato",
+          "example": 1050
+        },
+        "fechaPago": {
+          "type": "string",
+          "description": "Fecha de pago con formato AAAA-MM-DD",
+          "example": "2023-02-13"
+        },
+        "observaciones": {
+          "type": "string",
+          "description": "Es un campo no obligatorio, en el cual se describen las observaciones referente al pago de la(s) factura(s)",
+          "example": "Observaciones"
+        }
+      }
+    },
+    "factura": {
+      "type": "object",
+      "required": [
+        "id",
+        "monto"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "id de factura",
+          "example": "dh36543gdfgf6364gfd3"
+        },
+        "monto": {
+          "type": "number",
+          "description": "monto de la factura",
+          "example": 1000
+        }
+      }
+    },
+    "pagoFacturasGet": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "id del pago factura",
+          "example": "dh36543gdfgf6364gfd3522"
+        },
+        "factura": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/facturaPagoGet"
+          }
+        },
+        "montoDespuesImpuesto": {
+          "type": "number",
+          "description": "Indica el monto después de impuesto, la moneda se tomará de la moneda que se haya declarado en el contrato",
+          "example": 1050
+        },
+        "fechaPago": {
+          "type": "string",
+          "description": "Fecha de pago con formato AAAA-MM-DD",
+          "example": "2023-02-13"
+        },
+        "observaciones": {
+          "type": "string",
+          "description": "Es un campo no obligatorio, en el cual se describen las observaciones referente al pago de la(s) factura(s)",
+          "example": "Observaciones"
+        },
+        "protestaDecirVerdad": {
+          "type": "boolean",
+          "description": "protesta decir verdad",
+          "example": true
+        }
+      }
+    },
+    "facturaPagoGet": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "id de factura",
+          "example": "dh36543gdfgf6364gfd3"
+        },
+        "monto": {
+          "type": "number",
+          "description": "monto de la factura",
+          "example": 1000
+        }
+      }
+    },
+    "requestSancionAplicada": {
+      "type": "object",
+      "required": [
+        "contratoFormalizado",
+        "sancionesAplicadas",
+        "protestaDecirVerdad"
+      ],
+      "properties": {
+        "contratoFormalizado": {
+          "type": "string",
+          "description": "Número de contrato formalizado",
+          "example": "CONTRATOX"
+        },
+        "sancionesAplicadas": {
+          "$ref": "#/definitions/sancionAplicada"
+        },
+        "protestaDecirVerdad": {
+          "type": "boolean",
+          "description": "protesta de decir verdad, debe estar en true para poder guardar",
+          "example": true
+        }
+      }
+    },
+    "sancionAplicada": {
+      "type": "object",
+      "required": [
+        "tipoSancion",
+        "sancion",
+        "fechaCobro",
+        "importe",
+        "aplicaRescision",
+        "observaciones"
+      ],
+      "properties": {
+        "tipoSancion": {
+          "type": "string",
+          "description": "Indica el tipo de sanción, de acuerdo a las capturadas en el registro de contrato",
+          "enum": [
+            "PENA_CONVENCIONAL",
+            "DEDUCTIVA",
+            "OTRA"
+          ],
+          "example": "PENA_CONVENCIONAL"
+        },
+        "conceptoConv": {
+          "type": "string",
+          "description": "Indica el concepto y es obligatorio cuando el tipo sanción sea PENA_CONVENCIONAL y depende de lo que tiene registrado la sanción aplicable en el contrato",
+          "enum": [
+            "ATRASO",
+            "INCUMPLIMIENTO"
+          ],
+          "example": "ATRASO"
+        },
+        "concepto": {
+          "type": "string",
+          "description": "Indica el concepto y es obligatorio cuando el tipo sanción sea DEDUCTIVA u OTRA, depende de lo que tiene registrado la sanción aplicable en el contrato",
+          "example": "concepto sanción"
+        },
+        "sancion": {
+          "type": "string",
+          "description": "Indica la descripción de la sanción, depende de lo que tiene registrado la sanción aplicable en el contrato",
+          "example": "Sanción del 1 %"
+        },
+        "fechaCobro": {
+          "type": "string",
+          "description": "Fecha de cobro con formato AAAA-MM-DD",
+          "example": "2023-02-16"
+        },
+        "importe": {
+          "type": "number",
+          "description": "Indica el importe de la sanción, la moneda se tomará de la moneda que se haya declarado en el contrato",
+          "example": 450
+        },
+        "aplicaRescision": {
+          "type": "string",
+          "description": "Indica si la sanción se ha rescindido",
+          "enum": [
+            "SI",
+            "NO"
+          ],
+          "example": "NO"
+        },
+        "observaciones": {
+          "type": "string",
+          "description": "Es un campo en el cual se describen las observaciones referente a la sanción aplicada",
+          "example": "Observaciones"
+        }
+      }
+    },
+    "sancionesAplicadasGet": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "id de la sanción",
+          "example": "dh36543gdfgf6364gfd3"
+        },
+        "tipoSancion": {
+          "type": "string",
+          "description": "Indica el tipo de sanción, de acuerdo a las capturadas en el registro de contrato",
+          "enum": [
+            "PENA_CONVENCIONAL",
+            "DEDUCTIVA",
+            "OTRA"
+          ],
+          "example": "PENA_CONVENCIONAL"
+        },
+        "conceptoConv": {
+          "type": "string",
+          "description": "Indica el concepto y es obligatorio cuando el tipo sanción sea PENA_CONVENCIONAL y depende de lo que tiene registrado la sanción aplicable en el contrato",
+          "enum": [
+            "ATRASO",
+            "INCUMPLIMIENTO"
+          ],
+          "example": "ATRASO"
+        },
+        "concepto": {
+          "type": "string",
+          "description": "Indica el concepto y es obligatorio cuando el tipo sanción sea DEDUCTIVA u OTRA, depende de lo que tiene registrado la sanción aplicable en el contrato",
+          "example": "concepto sanción"
+        },
+        "sancion": {
+          "type": "string",
+          "description": "Indica la descripción de la sanción, depende de lo que tiene registrado la sanción aplicable en el contrato",
+          "example": "Sanción del 1 %"
+        },
+        "fechaCobro": {
+          "type": "string",
+          "description": "Fecha de cobro con formato AAAA-MM-DD",
+          "example": "2023-02-16"
+        },
+        "importe": {
+          "type": "number",
+          "description": "Indica el importe de la sanción, la moneda se tomará de la moneda que se haya declarado en el contrato",
+          "example": 450
+        },
+        "aplicaRescision": {
+          "type": "string",
+          "description": "Indica si la sanción se ha rescindido",
+          "enum": [
+            "SI",
+            "NO"
+          ],
+          "example": "NO"
+        },
+        "observaciones": {
+          "type": "string",
+          "description": "Es un campo en el cual se describen las observaciones referente a la sanción aplicada",
+          "example": "Observaciones"
+        },
+        "protestaDecirVerdad": {
+          "type": "boolean",
+          "description": "protesta decir verdad",
+          "example": true
+        }
+      }
+    },
+    "requestNotaCredito": {
+      "type": "object",
+      "required": [
+        "contratoFormalizado",
+        "notasCredito",
+        "protestaDecirVerdad"
+      ],
+      "properties": {
+        "contratoFormalizado": {
+          "type": "string",
+          "description": "Número de contrato formalizado",
+          "example": "CONTRATOX"
+        },
+        "notasCredito": {
+          "$ref": "#/definitions/notasCredito"
+        },
+        "protestaDecirVerdad": {
+          "type": "boolean",
+          "description": "protesta de decir verdad, debe estar en true para poder guardar",
+          "example": true
+        }
+      }
+    },
+    "notasCredito": {
+      "type": "object",
+      "required": [
+        "sanciones",
+        "observaciones"
+      ],
+      "properties": {
+        "sanciones": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/sancionNota"
+          }
+        },
+        "observaciones": {
+          "type": "string",
+          "description": "Es un campo en el cual se describen las observaciones referente a la nota de crédito",
+          "example": "Observaciones"
+        }
+      }
+    },
+    "sancionNota": {
+      "type": "object",
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "id de la sancion aplicada",
+          "example": "dh36543gdfgf6364gfd3"
+        }
+      }
+    },
+    "notasCreditoGet": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "id de la nota de crédito",
+          "example": "dh36543gdfgf6364gfd343"
+        },
+        "sanciones": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/sancionNotaGet"
+          }
+        },
+        "observaciones": {
+          "type": "string",
+          "description": "Es un campo en el cual se describen las observaciones referente a la nota de crédito",
+          "example": "Observaciones"
+        },
+        "protestaDecirVerdad": {
+          "type": "boolean",
+          "description": "protesta decir verdad",
+          "example": true
+        }
+      }
+    },
+    "sancionNotaGet": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "id de la sancion aplicada",
+          "example": "dh36543gdfgf6364gfd3"
+        }
+      }
+    },
+    "credenciales": {
+      "type": "object",
+      "required": [
+        "clienteId",
+        "secretKey"
+      ],
+      "properties": {
+        "clienteId": {
+          "type": "string",
+          "description": "Id de cliente proporcionado por la SFP a la institución requirente",
+          "example": "21000"
+        },
+        "secretKey": {
+          "type": "string",
+          "description": "Clave secreta del usuario de la institución",
+          "example": "32938ydnd230=T&/((/!"
+        }
+      }
+    },
+    "respuestaLogin": {
+      "type": "object",
+      "properties": {
+        "codigo": {
+          "description": "Status de respuesta.",
+          "type": "string",
+          "example": "200"
+        },
+        "detalles": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "description": "Detalle de la respuesta",
+            "example": "Operación exitosa"
+          }
+        }
+      }
+    },
+    "respuestaGetEstatus": {
+      "type": "object",
+      "properties": {
+        "codigo": {
+          "description": "Status de respuesta.",
+          "type": "string",
+          "example": "200"
+        },
+        "detalles": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "description": "Detalle de la respuesta",
+            "example": "Operación exitosa"
+          }
+        }
+      }
+    },
+    "respuestaGetPedidos": {
+      "type": "object",
+      "properties": {
+        "codigo": {
+          "description": "Status de respuesta.",
+          "type": "string",
+          "example": "200"
+        },
+        "detalles": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "description": "Detalle de la respuesta",
+            "example": "Operación exitosa"
+          }
+        },
+        "pedidos": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/pedidoContratoAbiertoGet"
+          }
+        }
+      }
+    },
+    "respuestaGetEntregaReal": {
+      "type": "object",
+      "properties": {
+        "codigo": {
+          "description": "Status de respuesta.",
+          "type": "string",
+          "example": "200"
+        },
+        "detalles": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "description": "Detalle de la respuesta",
+            "example": "Operación exitosa"
+          }
+        },
+        "entregaReal": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/entregaRealGet"
+          }
+        }
+      }
+    },
+    "respuestaGetFacturas": {
+      "type": "object",
+      "properties": {
+        "codigo": {
+          "description": "Status de respuesta.",
+          "type": "string",
+          "example": "200"
+        },
+        "detalles": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "description": "Detalle de la respuesta",
+            "example": "Operación exitosa"
+          }
+        },
+        "facturasRelacionadas": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/facturasGet"
+          }
+        }
+      }
+    },
+    "respuestaGetPagoFacturas": {
+      "type": "object",
+      "properties": {
+        "codigo": {
+          "description": "Status de respuesta.",
+          "type": "string",
+          "example": "200"
+        },
+        "detalles": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "description": "Detalle de la respuesta",
+            "example": "Operación exitosa"
+          }
+        },
+        "pagoFactura": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/pagoFacturasGet"
+          }
+        }
+      }
+    },
+    "respuestaGetSancionesAplicadas": {
+      "type": "object",
+      "properties": {
+        "codigo": {
+          "description": "Status de respuesta.",
+          "type": "string",
+          "example": "200"
+        },
+        "detalles": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "description": "Detalle de la respuesta",
+            "example": "Operación exitosa"
+          }
+        },
+        "sancionesAplicadas": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/sancionesAplicadasGet"
+          }
+        }
+      }
+    },
+    "respuestaGetNotasCredito": {
+      "type": "object",
+      "properties": {
+        "codigo": {
+          "description": "Status de respuesta.",
+          "type": "string",
+          "example": "200"
+        },
+        "detalles": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "description": "Detalle de la respuesta",
+            "example": "Operación exitosa"
+          }
+        },
+        "notasCredito": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/notasCreditoGet"
+          }
+        }
+      }
+    },
+    "respuestaGeneral": {
+      "type": "object",
+      "properties": {
+        "codigo": {
+          "description": "Status de respuesta.",
+          "type": "string",
+          "example": "200"
+        },
+        "id": {
+          "description": "id del pedido guardado",
+          "type": "string",
+          "example": "er56535dgsf24r74fgd7475654"
+        },
+        "detalles": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "description": "Detalle de la respuesta",
+            "example": "Operación exitosa"
+          }
+        },
+        "alertas": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "description": "alertas generadas en la respuesta",
+            "example": "La fecha de solicitud no puede ser mayor a la fecha de entrega programada"
+          }
+        }
+      }
+    }
+  }
+}
