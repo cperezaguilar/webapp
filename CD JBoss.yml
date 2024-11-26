@@ -1,0 +1,24 @@
+pipeline:
+  name: CD - JBoss
+  identifier: CD_JBoss
+  projectIdentifier: ActinverSAT
+  orgIdentifier: Jboss
+  tags: {}
+  stages:
+    - stage:
+        name: Deploy JBoss
+        identifier: Deploy_JBoss
+        tags: {}
+        template:
+          templateRef: org.CD_JBoss
+          templateInputs:
+            type: Deployment
+            spec:
+              service:
+                serviceRef: <+input>
+                serviceInputs: <+input>
+              environment:
+                environmentRef: <+input>
+                environmentInputs: <+input>
+                serviceOverrideInputs: <+input>
+                infrastructureDefinitions: <+input>
